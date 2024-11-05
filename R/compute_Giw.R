@@ -5,10 +5,10 @@
 
 decompose_poles <- function(p1, p2)
 {
-  R1 <- Re(p1)
-  R2 <- Re(p2)
-  I1 <- Im(p1)
-  I2 <- Im(p2)
+  R1 <- as.double(Re(p1))
+  R2 <- as.double(Re(p2))
+  I1 <- as.double(Im(p1))
+  I2 <- as.double(Im(p2))
 
   c(R1=R1, R2=R2, I1=I1, I2=I2)  
 }
@@ -18,10 +18,10 @@ left_parts <- function(p1, p2, w)
 {
   parts <- decompose_poles(p1, p2)
   
-  R1 <- parts["R1"]
-  R2 <- parts["R2"]
-  I1 <- parts["I1"]
-  I2 <- parts["I2"]
+  R1 <- as.double(parts["R1"])
+  R2 <- as.double(parts["R2"])
+  I1 <- as.double(parts["I1"])
+  I2 <- as.double(parts["I2"])
   
   RLL <- -R1 * ( R1 - R2 )
   
@@ -31,7 +31,7 @@ left_parts <- function(p1, p2, w)
   
   ILR <- R1_minus_R2 * w_minus_I1 - R1 * I1_minus_I2 + w_minus_I1 * I1_minus_I2
   
-  c(RLL=RRl, ILR=ILR)
+  c(RLL=RLL, ILR=ILR)
 }
 
 
@@ -39,10 +39,10 @@ right_parts <- function(p1, p2, w)
 {
   parts <- decompose_poles(p1, p2)
   
-  R1 <- parts["R1"]
-  R2 <- parts["R2"]
-  I1 <- parts["I1"]
-  I2 <- parts["I2"]
+  R1 <- as.double(parts["R1"])
+  R2 <- as.double(parts["R2"])
+  I1 <- as.double(parts["I1"])
+  I2 <- as.double(parts["I2"])
   
   w_plus_I2 <- w + I2
   I2_minus_I1 <- I2 - I1
