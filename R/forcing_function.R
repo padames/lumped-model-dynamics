@@ -19,11 +19,17 @@
 # magnitude ratio is the ratio between the largest output and the largest input
 magnitud_ratio_abs_value_fn <- function(Re, Im) 
 {
-  sqrt(Re * Re + Im * Im)
+  cn <- complex(real = Re, imaginary = Im)
+  Mod(cn )
+  # sqrt(Re * Re + Im * Im)
 }
 
 # The returned value is in radians
 phase_angle_radians_fn <- function(Re, Im) 
 {
-  atan(Im / Re)
+  cn <- complex(real = Re, imaginary = Im)
+  Arg(cn)
+  # atan(Im / Re)
 }
+
+
