@@ -17,4 +17,4 @@ using<-function(...) {
 # install.packages("testthat")
 
 
-using("usethis", "testthat")
+using("devtools", "usethis", "testthat")
