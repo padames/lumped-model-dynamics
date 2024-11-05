@@ -61,10 +61,10 @@ Giw <- function(p1, p2, w)
   L <- left_parts(p1, p2, w)
   R <- right_parts(p1, p2, w)
   
-  RLL <- L["RLL"]
-  ILR <- L["ILR"]
-  RRL <- R["RRL"]
-  IRR <- R["IRR"]
+  RLL <- as.double(L["RLL"])
+  ILR <- as.double(L["ILR"])
+  RRL <- as.double(R["RRL"])
+  IRR <- as.double(R["IRR"])
   
   RLL2 <- RLL * RLL
   ILR2 <- ILR * ILR
@@ -81,8 +81,8 @@ Giw <- function(p1, p2, w)
   Im_L <- ILR / den_L
   Im_R <- IRR / den_R
   
-  Re <- ReL + Re_R
+  Re <- Re_L + Re_R
   Im <- Im_L + Im_R
   
-  complex(Re, Im)
+  complex(real = Re, imaginary = Im)
 }
