@@ -26,14 +26,14 @@ pole_ <- function( mass, damping_coeff, stiffness_coeff, possitive = TRUE)
 
 
 ## this is the pole computed with the positive square root of the discriminant
-pole_plus <- function(mass, damping_coeff, stiffness_coeff)
+pole_plus_fn <- function(mass, damping_coeff, stiffness_coeff)
 {
   pole_( mass, damping_coeff, stiffness_coeff, TRUE)
 }
 
 
 ## this is the pole computed with the negative square root of the discriminant 
-pole_minus <- function( mass, damping_coeff, stiffness_coeff) 
+pole_minus_fn <- function( mass, damping_coeff, stiffness_coeff) 
 {
   pole_( mass, damping_coeff, stiffness_coeff, FALSE)
 }

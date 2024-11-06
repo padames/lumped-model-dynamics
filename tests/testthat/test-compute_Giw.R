@@ -7,7 +7,7 @@ test_that("decomposing poles works as expected", {
   I2 <- -0.73
   p1 <- complex(real = R1, imaginary = I1)
   p2 <- complex(real = R2, imaginary = I2)
-  parts <- decompose_poles(p1, p2)
+  parts <- decompose_poles_fn(p1, p2)
   R1_calc <- parts["R1"]
   expect_true(parts["R1"] == R1)
   expect_true(parts["I1"] == I1)
@@ -23,11 +23,12 @@ test_that("left parts are computed correctly", {
   RLL <- -Re(p1) * ( Re(p1) - Re(p2) )
   ILR <- (Re(p1) - Re(p2)) * (w - Im(p1)) - Re(p1) * (Im(p1) - Im(p2)) + (w - Im(p1)) * (Im(p1) - Im(p2))
   
-  parts <- left_parts(p1, p2, w)
+  parts <- left_parts_fn(p1, p2, w)
 
-    expect_true( parts["RLL"] == RLL)
+  expect_true( parts["RLL"] == RLL)
   expect_true( parts["ILR"] == ILR)
 })
+
 
 test_that("right parts are computed correctly", {
   p1 <- complex(real = 0.5, imaginary = -1.2)
@@ -38,7 +39,7 @@ test_that("right parts are computed correctly", {
   
   IRR <- (Re(p2) - Re(p1)) * (w + Im(p2)) - Re(p2) * (Im(p2) - Im(p1)) + (w + Im(p2)) * (Im(p2) - Im(p1))
   
-  parts <- right_parts(p1, p2, w)
+  parts <- right_parts_fn(p1, p2, w)
 
   expect_true( parts["RRL"] == RRL)
   expect_true( parts["IRR"] == IRR)
@@ -50,8 +51,8 @@ test_that("Giw is computed correctly", {
   p2 <- complex(real = -0.49, imaginary = 0.24)
   w <- 0.7194
   
-  L <- left_parts(p1, p2, w)
-  R <- right_parts(p1, p2, w)
+  L <- left_parts_fn(p1, p2, w)
+  R <- right_parts_fn(p1, p2, w)
   
   RLL <- as.double(L["RLL"])
   ILR <- as.double(L["ILR"])
@@ -76,7 +77,7 @@ test_that("Giw is computed correctly", {
   Re <- Re_L + Re_R
   Im <- Im_L + Im_R
   
-  g_iw <- Giw(p1, p2, w)
+  g_iw <- Giw_fn(p1, p2, w)
   
   expect_equal(Re(g_iw), Re)
   expect_equal(Im(g_iw), Im)

@@ -18,3 +18,5 @@ using<-function(...) {
 
 
 using("devtools", "usethis", "testthat")
+
+install_github("dasonk/docstring")

@@ -3,8 +3,19 @@
 
 ## The input are the poles and the frequency of the external force 
 
-decompose_poles <- function(p1, p2)
+library(docstring)
+
+decompose_poles_fn <- function(p1, p2)
 {
+  #' Get the Real and Imaginary parts of two complex numbers
+  #'
+  #' Each of the two input complex numbers is decomposed into 
+  #' real and imaginary components and returned in a named vector
+  #' 
+  #' @param p1 first complex number
+  #' @param p2 second complex number
+  #' 
+
   R1 <- as.double(Re(p1))
   R2 <- as.double(Re(p2))
   I1 <- as.double(Im(p1))
@@ -14,9 +25,21 @@ decompose_poles <- function(p1, p2)
 }
 
 
-left_parts <- function(p1, p2, w)
+left_parts_fn <- function(p1, p2, w)
 {
-  parts <- decompose_poles(p1, p2)
+  #' Computes the components of the left fractions
+  #' 
+  #' This is a near optimal way of computing the values 
+  #' that are used to compute the left fraction of each
+  #' of the Real and Imaginary components of a given solution
+  #' for two complex values. 
+  #' Values are computed only once.
+  #'
+  #' @param p1 first complex pole
+  #' @param p2 second complex pole
+  #' @param w the frequency of oscillation of the external force 
+  
+  parts <- decompose_poles_fn(p1, p2)
   
   R1 <- as.double(parts["R1"])
   R2 <- as.double(parts["R2"])
@@ -35,9 +58,22 @@ left_parts <- function(p1, p2, w)
 }
 
 
-right_parts <- function(p1, p2, w)
+right_parts_fn <- function(p1, p2, w)
 {
-  parts <- decompose_poles(p1, p2)
+  #' Computes the components of the right fractions
+  #' 
+  #' This is a near optimal way of computing the values 
+  #' that are used to compute the right fraction of each
+  #' of the Real and Imaginary components of a given solution
+  #' for two complex values.
+  #' Values are only computed once.
+  #'
+  #' @param p1 first complex pole
+  #' @param p2 second complex pole
+  #' @param w the frequency of oscillation of the external force 
+  #' 
+  
+  parts <- decompose_poles_fn(p1, p2)
   
   R1 <- as.double(parts["R1"])
   R2 <- as.double(parts["R2"])
@@ -56,10 +92,22 @@ right_parts <- function(p1, p2, w)
 }
 
 
-Giw <- function(p1, p2, w) 
+Giw_fn <- function(p1, p2, w) 
 {
-  L <- left_parts(p1, p2, w)
-  R <- right_parts(p1, p2, w)
+  #' Computes de complex number representing the output in the frequency domain
+  #' 
+  #' The output of the system in the frequency domain cam be a complex number.
+  #' Its magnitude ratio is the maximum output of the system in a transfer function
+  #' sense. The argument of this number represents the phase angle leading or 
+  #' lagging the input force angle (wt)
+  #' 
+  #' @param p1 first complex pole
+  #' @param p2 second complex pole
+  #' @param w the frequency of oscillation of the external force 
+  #'
+
+  L <- left_parts_fn(p1, p2, w)
+  R <- right_parts_fn(p1, p2, w)
   
   RLL <- as.double(L["RLL"])
   ILR <- as.double(L["ILR"])
