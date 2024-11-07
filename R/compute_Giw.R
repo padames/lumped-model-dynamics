@@ -5,11 +5,11 @@
 
 library(docstring)
 
-decompose_poles_fn <- function(p1, p2)
+decompose_complex_poles_fn <- function(p1, p2)
 {
-  #' Get the Real and Imaginary parts of two complex numbers
+  #' Get the Real and Imaginary parts of two complex poles
   #'
-  #' Each of the two input complex numbers is decomposed into 
+  #' Each of the two input complex poles is decomposed into 
   #' real and imaginary components and returned in a named vector
   #' 
   #' @param p1 first complex number
@@ -39,7 +39,7 @@ left_parts_fn <- function(p1, p2, w)
   #' @param p2 second complex pole
   #' @param w the frequency of oscillation of the external force 
   
-  parts <- decompose_poles_fn(p1, p2)
+  parts <- decompose_complex_poles_fn(p1, p2)
   
   R1 <- as.double(parts["R1"])
   R2 <- as.double(parts["R2"])
@@ -73,7 +73,7 @@ right_parts_fn <- function(p1, p2, w)
   #' @param w the frequency of oscillation of the external force 
   #' 
   
-  parts <- decompose_poles_fn(p1, p2)
+  parts <- decompose_complex_poles_fn(p1, p2)
   
   R1 <- as.double(parts["R1"])
   R2 <- as.double(parts["R2"])
@@ -92,7 +92,7 @@ right_parts_fn <- function(p1, p2, w)
 }
 
 
-Giw_fn <- function(p1, p2, w) 
+Giw_TwoComplexConjPoles_fn <- function(p1, p2, w) 
 {
   #' Computes de complex number representing the output in the frequency domain
   #' 
@@ -133,4 +133,39 @@ Giw_fn <- function(p1, p2, w)
   Im <- Im_L + Im_R
   
   complex(real = Re, imaginary = Im)
+}
+
+
+compute_Giw_fn <- function(m, c, k, w)
+{
+  #' Evaluates the transfer function for the system at iw
+  #' 
+  #' G(s) is the result of applying the Laplace transform
+  #' to the original linear ODE representing the system, and then
+  #' solving for G(s)=X(s)/M(s).
+  #' 
+  #' Where X(s) is the output of the system in the Laplace domain
+  #' X(s) is the input of the system in the Laplace domain and 
+  #' M(s) is the external force or disturbance in the Laplace domain
+  #' 
+  #' The solution is to replace s by iw into G(s)
+  #' 
+  #'               1
+  #' G(s)= ------------------- 
+  #'       ( ms^2 + c*s + k)
+  #'
+  #' and then separate the real and imaginary parts to create a complex number       
+
+  k_minus_m_w2 <- k - m * w * w
+  cw <- c * w
+  c2_times_w2 <- cw * cw
+  
+  denominator <- k_minus_m_w2 * k_minus_m_w2 + c2_times_w2
+  
+  real_part <- k_minus_m_w2 / denominator
+  
+  imaginary_part <- cw / denominator
+
+  # create the value and return it  
+  complex(real = real_part, imaginary = imaginary_part)
 }

@@ -4,75 +4,48 @@
 ## independent variable and the physical parameters as constants
 library(docstring)
 
-source("R/compute_Giw.R")
-source("R/forcing_function.R")
-source("R/poles_characteristic_equation.R")
-source("R/pole_types.R")
+# source("R/compute_Giw.R")
+# source("R/forcing_function.R")
+# source("R/poles_characteristic_equation.R")
+# source("R/pole_types.R")
 
 
-compute_Giw_fn <- function(m, c, k) {
+create_complementary_solution_vector_fn <- function(m, c, k, w) {
+  #' Creates a closure to be called with F0 and t
+  #' 
+  #' The closure can compute the Giw lazily and give its Module and Argument
+  #' it constructs a vector with the complementary wave solution.
+  #' The maximum output of this solution is magnitude ratio or modulus of Giw
+  #' and the wave function is out of phase with the input oscillation by an 
+  #' angle equal to the argument of Giw
+  #' 
+  #'  
   
-  list_of_poles <- poles_fn(m, c, k)
+  # this is part of the closure shipped with the function below
+  Giw_complex <- compute_Giw_fn(m, c, k, w)
   
-  if (list_of_poles$case_type == pole_types$TWO_REAL_DISTINCT )
+  # this is what you are calling when calling the closure returned 
+  function(F0, t) 
   {
-    # compute the complementary solution and Giw for the particular solution (wave) 
-    Giw <- Giw_TwoRealRoots_fn(list_of_poles$p1, list_of_poles$p2, w)
-    }
-  else if (list_of_poles$case_type == pole_types$TWO_REAL_REPEATED )
-  {
-    # compute the complementary solution for this case and Giw (for the wave form)
-    Giw <- Giw_OneRealRepeatedPole_fn(list_of_poles$p, w)
+    
+    num_time_points_to_simulate <- length(t)
+    
+    magnitud_ratio <- Mod(Giw_complex)
+  
+    phase_angle <- Arg(Giw_complex)
+    
+    F0_v <- rep(F0, times = num_time_points_to_simulate)
+    
+    magnitud_ratio_v <- rep(magnitud_ratio, times = num_time_points_to_simulate)
+    
+    w_v <- rep(w, times=num_time_points_to_simulate)
+    
+    phase_angle_v <- rep(phase_angle, times = num_time_points_to_simulate)
+    
+    F0_v * magnitud_ratio_v * sin( w_v * t + phase_angle_v)
   }  
-  else 
-  {
-    # # list_of_poles$case_type == pole_types$TWO_COMPLEX_CONJUGATE
-    # compute the complementary solution (wave form) and the Giw (for the wave form)
-    # list_of_poles$p1 #complex
-    # list_of_poles$p2 #complex
-    Giw <- Giw_TwoComplexConjPoles_fn(list_of_poles$p1, list_of_poles$p2, w)
-  }
 }
 
-
-Giw_TwoRealRoots_fn <- function(p1, p2, w)
-{
-  1
-}
-
-
-Giw_OneRealRepeatedPole_fn <- function(p, w)
-{
-  2
-}
-
-
-Giw_TwoComplexConjPoles_fn <- function(pc1, pc2, w)
-{
-  3
-}
-
-  
-create_complementary_fn <- function(Giw, poles_case=pole_types$TWO_REAL_DISTINCT) {
-  if (poles_case == pole_types$TWO_REAL_DISTINCT) {
-    function(t) {
-      "TWO_REAL"
-    }  
-  }
-  else if (poles_case == pole_types$TWO_REAL_DISTINCT)
-  {
-    function(t) {
-      "TWO_REAL_REPEATED"
-    }
-  }
-  else if (poles_case == pole_types$TWO_COMPLEX_CONJUGATE)
-  {
-    function(t) {
-      "TWO_COMPLEX_CONJUGATE"
-    }
-    # stop("Two complex conjugate poles not implemented yet")
-  }
-}
 
 
 ## compute the displacement vector for a give time vector
