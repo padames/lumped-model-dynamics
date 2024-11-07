@@ -46,7 +46,7 @@ create_complementary_solution_function_fn <- function(m, c, k, w) {
 
 
 ## compute the displacement vector for a give time vector
-x_t <- function(m, c, k, w, F0, t_v)
+x_t_fn <- function(m, c, k, w, F0, t_v)
 {
   #' Compute the displacement vector for a spring immersed in fluid
   #'
@@ -79,11 +79,19 @@ x_t <- function(m, c, k, w, F0, t_v)
   x_v_particular <- x_particular_fn(t_v)
   
   # the final vectorized solution
-  x_v <- x_v_particular + x_v_complementary
+  x_v_particular + x_v_complementary
+}
+
+
+x_t_plot <- function(m, c, k, w, F0, t_v)
+{
+  x_t <- x_t_fn(m, c, k, w, F0, t_v)
   
   title <- paste0("Dynamic Response of damped spring system, mass=",m," kg, damping coeff=", c, " kg/s, \nstiffnesss coef=", k, " kg/s2, F0=",F0," N, frequency=", w," radians/s")
-  plot(t_v, x_v*10, type = "l",
+  plot(t_v, x_t*10, type = "l",
        main = title,
        xlab = "Time, seconds",
        ylab = "Displacement, cm")
+  
 }
+
