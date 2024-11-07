@@ -1,6 +1,26 @@
-## this functions compute the poles of the characteristic equation derived
-## from applying the Laplace transform to the second-order ODE describing
-## the lumped-model of a spring oscillator immersed in a fluid
+## for all your pole needs
+
+source("R/pole_types.R")
+
+pole_type_fn <- function(mass, damping, stiffness)
+{
+  discriminant <- damping * damping - ( 4 * mass * stiffness )
+  
+  if (discriminant > 0)
+  {
+    pole_types$TWO_REAL_REPEATED 
+  } 
+  else if ( discriminant < 0)
+  {
+    pole_types$TWO_COMPLEX_CONJUGATE
+  }
+  else
+  {
+    pole_types$TWO_REAL_DISTINCT
+  }
+}
+
+
 
 
 
