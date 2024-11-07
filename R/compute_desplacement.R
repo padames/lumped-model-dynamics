@@ -4,23 +4,8 @@
 ## independent variable and the physical parameters as constants
 library(docstring)
 
-# source("R/compute_Giw.R")
-# source("R/forcing_function.R")
-# source("R/poles_characteristic_equation.R")
-# source("R/pole_types.R")
-
-
-create_particular_solution_function_fn <- function(m, c, k, w)
-{
-  #' Creates a function that can be called with a time vector
-  #' 
-  #' This will create the solution to the homogeneous linear ODE
-  #' representing the behaviour of the system without external forces 
-  
-  
-  
-}
-
+source("R/compute_Giw.R")
+source("R/compute_particular_solution.R")
 
 
 create_complementary_solution_function_fn <- function(m, c, k, w) {
@@ -61,7 +46,7 @@ create_complementary_solution_function_fn <- function(m, c, k, w) {
 
 
 ## compute the displacement vector for a give time vector
-x_fn <- function(t, m, c, k, w, F0, t_v)
+x_t <- function(m, c, k, w, F0, t_v)
 {
   #' Compute the displacement vector for a spring immersed in fluid
   #'
@@ -80,28 +65,24 @@ x_fn <- function(t, m, c, k, w, F0, t_v)
   #' @param F0 the maximum external force in Newton
   #' @param t_v vector of time points to solve for
   
-  Giw <- compute_Giw_fn()
-  
-  phase <- Arg(Giw)
-  magnitude_ratio <- Mod(Giw)
-  
   # number of solutions that will be computed
   simulation_points <- length(t_v)
   
-  # compute the vectors for the solution
-  w_v <- rep(w, times = simulation_points)
-  phase_v <- rep(phase, times = simulation_points)
-  magnitude_ratio <- Mod(Giw)
-  magnitude_ratio_v <- rep( magnitude_ratio, times = simulation_points) 
-  F0_v <- rep(F0, times = simulation_points)
-  
+  ##########
   x_complementary_fn <- create_complementary_solution_function_fn(m, c, k, w)
   
   x_v_complementary <- x_complementary_fn(F0, t_v)
   
+  ##########
+  x_particular_fn <- create_x_particular_function_roots_real_distintc_fn(m, c, k, F0, w)
   
-  x_v_particular <- create_particular_solution_function_fn(m, c, k, F0, w)
+  x_v_particular <- x_particular_fn(t_v)
   
   # the final vectorized solution
-  x_v = x_v_particular + x_v_complementary  
+  x_v <- x_v_particular + x_v_complementary
+  
+  plot(t_v, x_v*10, type = "l",
+       main = "Dynamic Response of damped spring system",
+       xlab = "Time, seconds",
+       ylab = "Displacement, cm")
 }

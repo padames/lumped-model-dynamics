@@ -1,6 +1,6 @@
 ## for all your pole needs
 
-# source("R/pole_types.R")
+source("R/pole_types.R")
 
 pole_type_fn <- function(mass, damping, stiffness)
 {
@@ -36,8 +36,11 @@ compute_two_real_poles_fn <- function(m, c, k)
 {
   discriminant <- c * c - 4 * k * m
 
-  if ( discriminant < 0 || discriminant == 0)  stop("Check if poles are real and distintc before calling this function")
-
+  if ( discriminant < 0 || discriminant == 0)  
+  {
+    cat(file = stdout(), discriminant)
+    stop("Check if poles are real and distintc before calling this function")
+  }
   p1 <- ( -c + sqrt(discriminant) ) / (2 * m)
   p2 <- ( -c - sqrt(discriminant) ) / (2 * m)
   
@@ -48,7 +51,13 @@ compute_two_real_poles_fn <- function(m, c, k)
 
 create_x_particular_function_roots_real_distintc_fn <- function(m, c, k, F0, w)
 {
-
+  #' Creates a function that can be called with a time vector
+  #' 
+  #' This will create the solution to the homogeneous linear ODE
+  #' representing the behaviour of the system without external forces 
+  #' 
+  #' 
+  
   poles <- compute_two_real_poles_fn(m, c, k)
   p1 <- poles$pole1
   p2 <- poles$pole2
