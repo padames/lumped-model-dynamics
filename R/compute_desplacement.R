@@ -10,8 +10,13 @@ library(docstring)
 # source("R/pole_types.R")
 
 
-create_particular_solution <- function(m, c, k, w)
+create_particular_solution_function_fn <- function(m, c, k, w)
 {
+  #' Creates a function that can be called with a time vector
+  #' 
+  #' This will create the solution to the homogeneous linear ODE
+  #' representing the behaviour of the system without external forces 
+  
   
   
 }
@@ -27,9 +32,6 @@ create_complementary_solution_function_fn <- function(m, c, k, w) {
   #' and the wave function is out of phase with the input oscillation by an 
   #' angle equal to the argument of Giw
   #' 
-  #' Read R-bloggers for a serious discussions about closures and a robust
-  #' way to implementing them without memory leaks: 
-  #' https://www.r-bloggers.com/2015/03/using-closures-as-objects-in-r/
   
   # this is part of the closure shipped with the function below
   Giw_complex <- compute_Giw_fn(m, c, k, w)
@@ -98,7 +100,7 @@ x_fn <- function(t, m, c, k, w, F0, t_v)
   x_v_complementary <- x_complementary_fn(F0, t_v)
   
   
-  x_v_particular <- create_particular_solution(m, c, k, w)
+  x_v_particular <- create_particular_solution_function_fn(m, c, k, F0, w)
   
   # the final vectorized solution
   x_v = x_v_particular + x_v_complementary  

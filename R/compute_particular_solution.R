@@ -21,13 +21,13 @@ pole_type_fn <- function(mass, damping, stiffness)
 }
 
 
-x_complementary_solution <- function(m, c, k) 
+create_particular_solution_function_fn <- function(m, c, k, F0, w) 
 {
   poles_type = pole_type_fn(m, c, k)
   
   if (poles_type == pole_types$TWO_REAL_DISTINCT)
   {
-    compute_x_roots_real_distintc(m, c, k, w)
+    create_x_particular_function_roots_real_distintc_fn(m, c, k, F0, w)
   }
 }
 
@@ -46,7 +46,7 @@ compute_two_real_poles_fn <- function(m, c, k)
 }
 
 
-create_x_complemetary_function_roots_real_distintc_fn <- function(m, c, k, F0, w)
+create_x_particular_function_roots_real_distintc_fn <- function(m, c, k, F0, w)
 {
 
   poles <- compute_two_real_poles_fn(m, c, k)
