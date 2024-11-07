@@ -7,6 +7,7 @@ library(docstring)
 source("R/compute_Giw.R")
 source("R/forcing_function.R")
 source("R/poles_characteristic_equation.R")
+source("R/pole_types.R")
 
 ## compute the displacement vector for a give time vector
 x_fn <- function(t, m, c, k, w, F0, t_v)
@@ -30,7 +31,7 @@ x_fn <- function(t, m, c, k, w, F0, t_v)
   
   list_of_poles <- poles_fn(m, c, k)
   
-  if (list_of_poles$case == TWO_REAL_POLES )
+  if (list_of_poles$case_type == pole_types$TWO_REAL_DISTINCT )
   {
     # compute the complementary solution and Giw for the particular solution (wave) 
     list_of_poles$p1
@@ -38,16 +39,16 @@ x_fn <- function(t, m, c, k, w, F0, t_v)
     Giw <- Giw_TwoRealRoots_fn(list_of_poles$p1, list_of_poles$p2, w)
     x_v_complementary <- 1
   }
-  else if (list_of_poles$case == TWO_REAL_REPEATED_POLES )
+  else if (list_of_poles$case_type == pole_types$TWO_REAL_REPEATED )
   {
     # compute the complementary solution for this case and Giw (for the wave form)
     list_of_poles$p
     Giw <- Giw_OneRealRepeatedPole_fn(list_of_poles$p, w)
     x_v_complementary <- 1
   }  
-  else
+  else 
   {
-    # TWO COMPLEX CONJUGATE SOLUTIONS
+    # # list_of_poles$case_type == pole_types$TWO_COMPLEX_CONJUGATE
     # compute the complementary solution (wave form) and the Giw (for the wave form)
     list_of_poles$p1 #complex
     list_of_poles$p2 #complex
@@ -57,6 +58,7 @@ x_fn <- function(t, m, c, k, w, F0, t_v)
   
   
   phase <- Arg(Giw)
+  magnitude_ratio <- Mod(Giw)
   
   # number of solutions that will be computed
   simulation_points <- length(t_v)
