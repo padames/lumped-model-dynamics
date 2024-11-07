@@ -28,10 +28,34 @@ x_fn <- function(t, m, c, k, w, F0, t_v)
   #' @param F0 the maximum external force in Newton
   #' @param t_v vector of time points to solve for
   
-  pole_plus <- pole_plus_fn(m, c, k)
-  pole_minus <- pole_minus_fn(m, c, k)
+  list_of_poles <- poles_fn(m, c, k)
   
-  Giw <- Giw_fn(pole_plus, pole_minus, w)
+  if (list_of_poles$case == TWO_REAL_POLES )
+  {
+    # compute the complementary solution and Giw for the particular solution (wave) 
+    list_of_poles$p1
+    list_of_poles$p2
+    Giw <- Giw_TwoRealRoots_fn(list_of_poles$p1, list_of_poles$p2, w)
+    x_v_complementary <- 1
+  }
+  else if (list_of_poles$case == TWO_REAL_REPEATED_POLES )
+  {
+    # compute the complementary solution for this case and Giw (for the wave form)
+    list_of_poles$p
+    Giw <- Giw_OneRealRepeatedPole_fn(list_of_poles$p, w)
+    x_v_complementary <- 1
+  }  
+  else
+  {
+    # TWO COMPLEX CONJUGATE SOLUTIONS
+    # compute the complementary solution (wave form) and the Giw (for the wave form)
+    list_of_poles$p1 #complex
+    list_of_poles$p2 #complex
+    Giw <- Giw_TwoComplexConjPoles_fn(list_of_poles$p1, list_of_poles$p2, w)
+    x_v_complementary <- 1
+  }
+  
+  
   phase <- Arg(Giw)
   
   # number of solutions that will be computed
@@ -46,7 +70,7 @@ x_fn <- function(t, m, c, k, w, F0, t_v)
     
   # vectorized equation
   x_v_particular <-  magnitude_ratio_v * sin( w_v * t_v + phase_v)
-  x_v_complementary <- w_v 
+  
     
   x_v = F0 * ( x_v_particular + x_v_complementary)  
   
