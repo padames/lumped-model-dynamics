@@ -10,7 +10,15 @@ library(docstring)
 # source("R/pole_types.R")
 
 
-create_complementary_solution_vector_fn <- function(m, c, k, w) {
+create_particular_solution <- function(m, c, k, w)
+{
+  
+  
+}
+
+
+
+create_complementary_solution_function_fn <- function(m, c, k, w) {
   #' Creates a closure to be called with F0 and t
   #' 
   #' The closure can compute the Giw lazily and give its Module and Argument
@@ -19,16 +27,18 @@ create_complementary_solution_vector_fn <- function(m, c, k, w) {
   #' and the wave function is out of phase with the input oscillation by an 
   #' angle equal to the argument of Giw
   #' 
-  #'  
+  #' Read R-bloggers for a serious discussions about closures and a robust
+  #' way to implementing them without memory leaks: 
+  #' https://www.r-bloggers.com/2015/03/using-closures-as-objects-in-r/
   
   # this is part of the closure shipped with the function below
   Giw_complex <- compute_Giw_fn(m, c, k, w)
   
   # this is what you are calling when calling the closure returned 
-  function(F0, t) 
+  function(F0, t_v) 
   {
     
-    num_time_points_to_simulate <- length(t)
+    num_time_points_to_simulate <- length(t_v)
     
     magnitud_ratio <- Mod(Giw_complex)
   
@@ -42,7 +52,7 @@ create_complementary_solution_vector_fn <- function(m, c, k, w) {
     
     phase_angle_v <- rep(phase_angle, times = num_time_points_to_simulate)
     
-    F0_v * magnitud_ratio_v * sin( w_v * t + phase_angle_v)
+    F0_v * magnitud_ratio_v * sin( w_v * t_v + phase_angle_v)
   }  
 }
 
@@ -83,9 +93,13 @@ x_fn <- function(t, m, c, k, w, F0, t_v)
   magnitude_ratio_v <- rep( magnitude_ratio, times = simulation_points) 
   F0_v <- rep(F0, times = simulation_points)
   
-  # vectorized equation
-  x_v_particular <-  magnitude_ratio_v * sin( w_v * t_v + phase_v)
+  x_complementary_fn <- create_complementary_solution_function_fn(m, c, k, w)
   
-  x_v = F0 * ( x_v_particular + x_v_complementary)  
+  x_v_complementary <- x_complementary_fn(F0, t_v)
   
+  
+  x_v_particular <- create_particular_solution(m, c, k, w)
+  
+  # the final vectorized solution
+  x_v = x_v_particular + x_v_complementary  
 }
