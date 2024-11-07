@@ -81,8 +81,9 @@ x_t <- function(m, c, k, w, F0, t_v)
   # the final vectorized solution
   x_v <- x_v_particular + x_v_complementary
   
+  title <- paste0("Dynamic Response of damped spring system, mass=",m," kg, damping coeff=", c, " kg/s, \nstiffnesss coef=", k, " kg/s2, F0=",F0," N, frequency=", w," radians/s")
   plot(t_v, x_v*10, type = "l",
-       main = "Dynamic Response of damped spring system",
+       main = title,
        xlab = "Time, seconds",
        ylab = "Displacement, cm")
 }
