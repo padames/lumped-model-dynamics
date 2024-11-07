@@ -1,6 +1,6 @@
 ## for all your pole needs
 
-source("R/pole_types.R")
+# source("R/pole_types.R")
 
 pole_type_fn <- function(mass, damping, stiffness)
 {
@@ -21,7 +21,53 @@ pole_type_fn <- function(mass, damping, stiffness)
 }
 
 
+x_complementary_solution <- function(m, c, k) 
+{
+  poles_type = pole_type_fn(m, c, k)
+  
+  if (poles_type == pole_types$TWO_REAL_DISTINCT)
+  {
+    compute_x_roots_real_distintc(m, c, k, w)
+  }
+}
 
+
+compute_two_real_poles_fn <- function(m, c, k)
+{
+  discriminant <- c * c - 4 * k * m
+
+  if ( discriminant < 0 || discriminant == 0)  stop("Check if poles are real and distintc before calling this function")
+
+  p1 <- ( -c + sqrt(discriminant) ) / (2 * m)
+  p2 <- ( -c - sqrt(discriminant) ) / (2 * m)
+  
+  list(pole1=p1, pole2=p2)
+  
+}
+
+
+create_x_complemetary_function_roots_real_distintc_fn <- function(m, c, k, F0, w)
+{
+
+  poles <- compute_two_real_poles_fn(m, c, k)
+  p1 <- poles$pole1
+  p2 <- poles$pole2
+  
+  q_num <- F0 * w
+  q1_den <- (p1*p1 + w*w) * (p1 - p2)
+  q2_den <- (p2*p2 + w*w) * (p2 - p1)
+  
+  q1 <- q_num / q1_den
+  q2 <- q_num / q2_den
+  function(t_v) {
+    num_time_points_to_simulate <- length(t_v)
+    q1_v <- rep(q1, times = num_time_points_to_simulate)
+    q2_v <- rep(q2, times = num_time_points_to_simulate)
+    p1_v <- rep(p1, times = num_time_points_to_simulate)
+    p2_v <- rep(p2, times = num_time_points_to_simulate)
+    q1_v * exp(p1_v*t_v) + q2_v * exp(p2_v * t_v)  
+  }
+}
 
 
 ## this function returns a complex number
