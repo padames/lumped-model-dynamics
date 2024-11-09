@@ -1,4 +1,8 @@
-source("../../R/compute_Giw.R")
+library(here)
+
+source(here::here("R","compute_Giw.R"))
+#the following only works when running testthat
+# source("../../R/compute_Giw.R")
 
 
 

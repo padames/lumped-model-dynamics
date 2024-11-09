@@ -1,6 +1,7 @@
 ## for all your pole needs
+library("here")
 
-source("R/pole_types.R")
+source(here("R", "pole_types.R"))
 
 pole_type_fn <- function(mass, damping, stiffness)
 {

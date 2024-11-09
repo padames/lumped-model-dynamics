@@ -1,4 +1,7 @@
-source("../../R/pole_types.R")
+library(here)
+
+source(here::here("R","pole_types.R"))
+
 
 test_that("defining an adhoc anumeration works as expected", {
   fruit_poles <- create_enum_fn(APPLE,BANANA,MELON)

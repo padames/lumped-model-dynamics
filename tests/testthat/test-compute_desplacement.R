@@ -1,5 +1,9 @@
-source("../../R/compute_desplacement.R")
-source("../../R/compute_Giw.R")
+library(here)
+
+# source("../../R/compute_desplacement.R")
+# source("../../R/compute_Giw.R")
+source(here::here("R","compute_displacement.R"))
+source(here::here("R","compute_Giw.R"))
 
 test_that("creates a function", 
           {

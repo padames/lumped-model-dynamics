@@ -3,9 +3,11 @@
 ## It assumes that there is a time vector used as the input 
 ## independent variable and the physical parameters as constants
 library(docstring)
+library(here)
 
-source("R/compute_Giw.R")
-source("R/compute_particular_solution.R")
+
+source(here::here("R","compute_Giw.R"))
+source(here::here("R","compute_particular_solution.R"))
 
 
 create_complementary_solution_function_fn <- function(m, c, k, w) {

@@ -9,8 +9,9 @@
 
 library(shiny)
 library(shinythemes)
+library(here)
 
-source("R/compute_displacement.R")
+source(here::here("R", "compute_displacement.R"))
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
