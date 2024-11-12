@@ -4,6 +4,8 @@
 ## independent variable and the physical parameters as constants
 library(docstring)
 library(here)
+library(plotly)
+library(dplyr)
 
 
 source(here::here("R","compute_Giw.R"))
@@ -90,10 +92,16 @@ x_t_plot <- function(m, c, k, w, F0, t_v)
   x_t <- x_t_fn(m, c, k, w, F0, t_v)
   
   title <- paste0("Dynamic Response of damped spring system, mass=",m," kg, damping coeff=", c, " kg/s, \nstiffnesss coef=", k, " kg/s2, F0=",F0," N, frequency=", w," radians/s")
-  plot(t_v, x_t*10, type = "l",
-       main = title,
-       xlab = "Time, seconds",
-       ylab = "Displacement, cm")
-  
+  # plot(t_v, x_t*10, type = "l",
+  #      main = title,
+  #      xlab = "Time, seconds",
+  #      ylab = "Displacement, cm")
+  data_to_plot <- data.frame(time=t_v, displacement=x_t/10)
+  fig <- plot_ly(x= data_to_plot$time, y=data_to_plot$displacement, type = "scatter",
+                mode = 'lines')
+  fig <- fig %>% layout(title = title,
+                        xaxis = list(title = "Time, seconds"),
+                        yaxis = list(title = "Displacement, cm"))
+  fig
 }
 

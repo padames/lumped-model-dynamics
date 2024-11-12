@@ -17,6 +17,6 @@ using<-function(...) {
 # install.packages("testthat")
 
 
-using("devtools", "usethis", "testthat")
+using("devtools", "usethis", "testthat", "plotly")
 
 install_github("dasonk/docstring")

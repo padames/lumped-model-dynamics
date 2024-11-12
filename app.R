@@ -10,6 +10,7 @@
 library(shiny)
 library(shinythemes)
 library(here)
+library(plotly)
 
 source(here::here("R", "compute_displacement.R"))
 
@@ -56,7 +57,8 @@ ui <- fluidPage(
       mainPanel(
           tabsetPanel(type = "tabs",
                       tabPanel("Response", br(),
-                               plotOutput("response")),
+                                plotlyOutput(outputId = "response")
+                      ),
                       tabPanel("Discussion", 
                                br(), 
                                textOutput("instructionsOut0"),
@@ -83,7 +85,11 @@ ui <- fluidPage(
                                br(),
                                tags$div(id="fig5",class="shiny-image-output",style="width: 50% ;  height: 50%"),
                                br(),
-                               )
+                      ),
+                      tabPanel("Log", br(),
+                               textOutput("logentry1"), br(),
+                               textOutput("logentry2"), br(),
+                      )
           ))
     )
 )
@@ -91,33 +97,47 @@ ui <- fluidPage(
 # Define server logic required to draw a histogram
 server <- function(input, output, session) {
 
-    output$response <- renderImage({
+    output$response <- renderPlotly({
         # generate  plot from inputs in ui.R
-        t_v <- seq(0, input$maxtime*60, 0.1) # the model needs seconds. 0.1 allow to capture detail when needed
-        x_t <- x_t_fn(input$mass, input$damping, input$stiff, input$frequency, input$force, t_v)
+        maxtime <- input$maxtime
+        
+        time_vector <- seq(0, maxtime*60, 0.1) # the model needs seconds. 0.1 allow to capture detail when needed
+        displacement_vector_meters <- x_t_fn(input$mass, input$damping, input$stiff, input$frequency, input$force, time_vector)
 
-        # A temp file to save the output. It will be deleted after renderImage
-        # sends it, because deleteFile=TRUE.
-        width  <- session$clientData$output_response_width
-        height <- session$clientData$output_response_height
+        title <- paste0("Dynamic Response of a damped spring system initially at rest\nmass=",input$mass," kg, damping coeff=",
+                        input$damping, " kg/s, stiffnesss coef=", input$stiff, "kg/s2,\nexternal force=",input$force," N, frequency=", input$frequency," radians/s")
+
+        data_to_plot <- data.frame(time=time_vector, displacement=displacement_vector_meters/10)
+        fig <- plot_ly(x= data_to_plot$time, y=data_to_plot$displacement, type = "scatter",
+                       mode = 'lines')
+        if (maxtime >0 && maxtime <= 5)
+        {
+          fig <- fig %>% layout(margin= list(t=100),
+                                title = list(text = title, font=list(size=14, color="brown"), x=0.2, y = 0.83),
+                                xaxis = list(title = "Time, seconds", dtick = 60, tickmode = "linear"),
+                                
+                                yaxis = list(title = "Displacement, cm"))
+        }
+        if (maxtime > 5)
+        {
+          between_5_and_20 <- maxtime <= 20
+          between_20_and_300 <- maxtime > 20 && maxtime < 300
+          ticks_by_minute <- ifelse( between_5_and_20, 1,ifelse(between_20_and_300, 10, 100))
+          
+          tick_values_minutes <- (seq(0, maxtime, ticks_by_minute))
+          
+          tick_values_text <- as.list(as.character(tick_values_minutes))
+             
+          tick_values_seconds <- as.list(tick_values_minutes * 60)
+          
+          fig <- fig %>% layout(margin= list(t=100),
+                                title = list(text = title, font=list(size=14, color="brown"), x=0.2, y = 0.83),
+                                xaxis = list(title = "Time, minutes", ticktext=tick_values_text, tickvals=tick_values_seconds, tickmode = "array"),
+                                yaxis = list(title = "Displacement, cm"))
+        }
         
-        outfile <- tempfile(fileext='.jpeg')
-        
-        # Generate a png
-        png(outfile, width=width, height=height)
-        # draw the plot
-        title <- paste0("Dynamic Response of a damped spring system\nmass=",input$mass," kg, damping coeff=", input$damping, " kg/s, \nstiffnesss coef=", input$stiff, " kg/s2, F0=",input$force," N, frequency=", input$frequency," radians/s")
-        plot(t_v, x_t/10, type = "l",
-             main = title,
-             xlab = "Time, seconds",
-             ylab = "Displacement, cm")
-        
-        dev.off()
-        
-        # Return a list
-        list(src = outfile,
-             alt = "Dynamic response plot")
-    }, deleteFile = TRUE)
+        ggplotly(fig)
+    })
     
     output$instructionsOut0 = renderText("1. Notes to develop the model implementation. Starting from the linear Ordinary Differential Equation (ODE)")
     output$instructionsOut1 = renderText("2. From time-domain ODE to Laplace-domain input-output formulation")
@@ -139,7 +159,9 @@ server <- function(input, output, session) {
     output$fig3 = renderImage(list(src=filename3), deleteFile = FALSE)
     output$fig4 = renderImage(list(src=filename4), deleteFile = FALSE)
     output$fig5 = renderImage(list(src=filename5), deleteFile = FALSE)
-    
+
+    output$logentry1 = renderText("1. Nov 7, 2024: First version complete")
+    output$logentry2 = renderText("2. Nov 10, 2024: Upgrade from native R plot to plotly library. Got zoom and print for free.")
 }
 
 # Run the application 
