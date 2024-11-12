@@ -30,13 +30,13 @@ create_particular_solution_function_fn <- function(mass, damping, stiffness, inp
   {
     create_particular_function_roots_real_distintc_fn(mass, damping, stiffness, input_force, frequency)
   }
+  else if (poles_type == pole_types$TWO_COMPLEX_CONJUGATE)
+  {
+    create_particular_function_roots_complex_conjugate_fn()
+  }
   else
   {
-    function(vector_of_times)
-    {
-      num_time_points_to_simulate <- length(vector_of_times)
-      rep(0, times = num_time_points_to_simulate)
-    }
+    create_particular_function_roots_real_repeated_fn()
   }
   
 }
@@ -91,6 +91,31 @@ create_particular_function_roots_real_distintc_fn <- function(mass, damping, sti
     q1_v * exp(p1_v*vector_of_times) + q2_v * exp(p2_v * vector_of_times)  
   }
 }
+
+
+create_particular_function_roots_complex_conjugate_fn <- function()
+{
+  # TODO: replace this stub for the real function
+  
+  function(vector_of_times)
+  {
+    num_time_points_to_simulate <- length(vector_of_times)
+    rep(0, times = num_time_points_to_simulate)
+  }
+}
+
+
+create_particular_function_roots_real_repeated_fn <- function()
+{
+  # TODO: replace this stub for the real function
+  
+  function(vector_of_times)
+  {
+    num_time_points_to_simulate <- length(vector_of_times)
+    rep(0, times = num_time_points_to_simulate)
+  }
+}
+
 
 
 ## this function returns a complex number

@@ -52,7 +52,7 @@ create_complementary_solution_function_fn <- function(mass, damping_coefficient,
 
 
 ## compute the displacement vector for a give time vector
-displacement_fn <- function(mass, damping_coefficient, stiffness_coefficient, force_frequency, input_force, vector_of_times)
+displacement_fn <- function(arguments)
 {
   #' Compute the displacement vector for a spring immersed in fluid
   #'
@@ -62,55 +62,78 @@ displacement_fn <- function(mass, damping_coefficient, stiffness_coefficient, fo
   #' The external force has a maximum value, F(0), in Newton, and an oscillation
   #' frequency, w, in radians per second.
   #' 
-  #' 
-  #' @param mass the mass of the system in kg concentrated at its center of gravity
-  #' @param damping_coefficient the damping constant in kg/s, includes the fluid damping
-  #' @param stiffness_coefficient the spring stiffness in kg/s^2
-  #' @param force_frequency the frequency of the oscillatory external force, in radians per second
-  #' @param input_force the maximum external force in Newton
-  #' @param vector_of_times time points to solve for
+  #' @param arguments list of parameters needed for the simulation. Below their decription.
+  #'        mass the mass of the system in kg concentrated at its center of gravity
+  #'        damping_coefficient the damping constant in kg/s, includes the fluid damping
+  #'        stiffness_coefficient the spring stiffness in kg/s^2
+  #'        force_frequency the frequency of the oscillatory external force, in radians per second
+  #'        input_force the maximum external force in Newton
+  #'        vector_of_times time points to solve for
+  
+              mass  <-  arguments$mass
+           damping  <-  arguments$damping
+         stiffness  <-  arguments$stiffness
+         frequency  <-  arguments$frequency
+       input_force  <-  arguments$input_force
+   vector_of_times  <-  arguments$vector_of_times  
+  
   
   ##########
-  displacement_complementary_fn <- create_complementary_solution_function_fn(mass, damping_coefficient, stiffness_coefficient, force_frequency)
+   
+  displacement_complementary_fn <- create_complementary_solution_function_fn(mass, damping, stiffness, frequency)
   
   displacement_complementary_solution <- displacement_complementary_fn(input_force, vector_of_times)
   
   ##########
-  displacement_particular_fn <- create_particular_solution_function_fn(mass, damping_coefficient, stiffness_coefficient, input_force, force_frequency)
+  
+  displacement_particular_fn <- create_particular_solution_function_fn(mass, damping, stiffness, input_force, frequency)
   
   displacement_particular_solution <- displacement_particular_fn(vector_of_times)
   
-  # the final vectorized solution
+  # the complete vectorized solution
+  
   displacement <- displacement_particular_solution + displacement_complementary_solution
   
   displacement
 }
 
 
-displacement_plot_fn <- function(mass, damping, stiffness, frequency, input_force, vector_of_times)
+displacement_plot_fn <- function(arguments)
 {
   #' Create a plot for easy visualization of the dynamic response
   #' 
   #' 
-  vector_of_displacements <- displacement_fn(mass, damping, stiffness, frequency, input_force, vector_of_times)
+  #' Creates a plot with the displacement and times.
+  #' It relies on the function displacement_fn to compute the dynamic response
+  #' to the damped spring system subject to an external force, starting at rest
+  #' and in its rest position (with zero displacement). 
+  #' 
+  #' @param arguments a list of values including the mass, damping, stiffness,
+  #' frequency, input force, and the times to be used for the simulation of the
+  #' displacement of the spring.
   
-  title <- paste0("Dynamic Response of damped spring system, mass=", mass,
-                  " kg, damping coeff=", damping, 
-                  "kg/s, \nstiffnesss coef=", stiffness,
-                  " kg/s2, input force=", input_force,
-                  " N, frequency=", frequency," radians/s")
   
-  data_to_plot <- data.frame(time=vector_of_times, 
+  vector_of_displacements <- displacement_fn(arguments)
+  
+  title <- paste0("Dynamic Response of damped spring system, mass=", arguments$mass,
+                  " kg, damping coeff=", arguments$damping, 
+                  "kg/s, \nstiffnesss coef=", arguments$stiffness,
+                  " kg/s2, input force=", arguments$input_force,
+                  " N, frequency=", arguments$frequency," radians/s")
+  
+  data_to_plot <- data.frame(time=arguments$vector_of_times, 
                              displacement=vector_of_displacements/10)
 
-  fig <- plot_ly(x= data_to_plot$time, 
-                 y=data_to_plot$displacement, 
+  fig <- plot_ly(x    = data_to_plot$time, 
+                 y    = data_to_plot$displacement, 
                  type = "scatter",
                  mode = 'lines')
   
   fig <- fig %>% layout(title = title,
                         xaxis = list(title = "Time, seconds"),
                         yaxis = list(title = "Displacement, cm"))
+  
+  # this will make it show in an interactive RStudio session
   fig
 }
 
