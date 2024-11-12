@@ -12,7 +12,7 @@ source(here::here("R","compute_Giw.R"))
 source(here::here("R","compute_particular_solution.R"))
 
 
-create_complementary_solution_function_fn <- function(m, c, k, w) {
+create_complementary_solution_function_fn <- function(mass, damping_coefficient, stiffness_coefficient, force_frequency) {
   #' Creates a closure to be called with F0 and t
   #' 
   #' The closure can compute the Giw lazily and give its Module and Argument
@@ -23,34 +23,36 @@ create_complementary_solution_function_fn <- function(m, c, k, w) {
   #' 
   
   # this is part of the closure shipped with the function below
-  Giw_complex <- compute_Giw_fn(m, c, k, w)
+  Giw_complex <- compute_Giw_fn(mass, damping_coefficient, stiffness_coefficient, force_frequency)
   
   # this is what you are calling when calling the closure returned 
-  function(F0, t_v) 
+  function(input_force, vector_of_times) 
   {
     
-    num_time_points_to_simulate <- length(t_v)
+    num_time_points_to_simulate <- length(vector_of_times)
     
     magnitud_ratio <- Mod(Giw_complex)
   
     phase_angle <- Arg(Giw_complex)
     
-    F0_v <- rep(F0, times = num_time_points_to_simulate)
+    vector_of_input_forces <- rep(input_force, times = num_time_points_to_simulate)
     
-    magnitud_ratio_v <- rep(magnitud_ratio, times = num_time_points_to_simulate)
+    vector_of_magnitud_ratios <- rep(magnitud_ratio, times = num_time_points_to_simulate)
     
-    w_v <- rep(w, times=num_time_points_to_simulate)
+    vector_of_frequencies <- rep(force_frequency, times=num_time_points_to_simulate)
     
-    phase_angle_v <- rep(phase_angle, times = num_time_points_to_simulate)
+    vector_of_phase_angles <- rep(phase_angle, times = num_time_points_to_simulate)
     
-    F0_v * magnitud_ratio_v * sin( w_v * t_v + phase_angle_v)
+    complementary_solution <- vector_of_input_forces * vector_of_magnitud_ratios * sin( vector_of_frequencies * vector_of_times + vector_of_phase_angles)
+    
+    complementary_solution
   }  
 }
 
 
 
 ## compute the displacement vector for a give time vector
-x_t_fn <- function(m, c, k, w, F0, t_v)
+displacement_fn <- function(mass, damping_coefficient, stiffness_coefficient, force_frequency, input_force, vector_of_times)
 {
   #' Compute the displacement vector for a spring immersed in fluid
   #'
@@ -61,44 +63,51 @@ x_t_fn <- function(m, c, k, w, F0, t_v)
   #' frequency, w, in radians per second.
   #' 
   #' 
-  #' @param t a vector of points in time to solve for displacement
-  #' @param m the mass of the system in kg concentrated at its center of gravity
-  #' @param c the damping coefficient constant in kg/s, includes the fluid damping
-  #' @param k the spring stiffness in kg/s^2
-  #' @param w the frequency of the oscillatory external force, in radians per second
-  #' @param F0 the maximum external force in Newton
-  #' @param t_v vector of time points to solve for
-  
-  # number of solutions that will be computed
-  simulation_points <- length(t_v)
+  #' @param mass the mass of the system in kg concentrated at its center of gravity
+  #' @param damping_coefficient the damping constant in kg/s, includes the fluid damping
+  #' @param stiffness_coefficient the spring stiffness in kg/s^2
+  #' @param force_frequency the frequency of the oscillatory external force, in radians per second
+  #' @param input_force the maximum external force in Newton
+  #' @param vector_of_times time points to solve for
   
   ##########
-  x_complementary_fn <- create_complementary_solution_function_fn(m, c, k, w)
+  displacement_complementary_fn <- create_complementary_solution_function_fn(mass, damping_coefficient, stiffness_coefficient, force_frequency)
   
-  x_v_complementary <- x_complementary_fn(F0, t_v)
+  displacement_complementary_solution <- displacement_complementary_fn(input_force, vector_of_times)
   
   ##########
-  x_particular_fn <- create_x_particular_function_roots_real_distintc_fn(m, c, k, F0, w)
+  displacement_particular_fn <- create_particular_solution_function_fn(mass, damping_coefficient, stiffness_coefficient, input_force, force_frequency)
   
-  x_v_particular <- x_particular_fn(t_v)
+  displacement_particular_solution <- displacement_particular_fn(vector_of_times)
   
   # the final vectorized solution
-  x_v_particular + x_v_complementary
+  displacement <- displacement_particular_solution + displacement_complementary_solution
+  
+  displacement
 }
 
 
-x_t_plot <- function(m, c, k, w, F0, t_v)
+displacement_plot_fn <- function(mass, damping, stiffness, frequency, input_force, vector_of_times)
 {
-  x_t <- x_t_fn(m, c, k, w, F0, t_v)
+  #' Create a plot for easy visualization of the dynamic response
+  #' 
+  #' 
+  vector_of_displacements <- displacement_fn(mass, damping, stiffness, frequency, input_force, vector_of_times)
   
-  title <- paste0("Dynamic Response of damped spring system, mass=",m," kg, damping coeff=", c, " kg/s, \nstiffnesss coef=", k, " kg/s2, F0=",F0," N, frequency=", w," radians/s")
-  # plot(t_v, x_t*10, type = "l",
-  #      main = title,
-  #      xlab = "Time, seconds",
-  #      ylab = "Displacement, cm")
-  data_to_plot <- data.frame(time=t_v, displacement=x_t/10)
-  fig <- plot_ly(x= data_to_plot$time, y=data_to_plot$displacement, type = "scatter",
-                mode = 'lines')
+  title <- paste0("Dynamic Response of damped spring system, mass=", mass,
+                  " kg, damping coeff=", damping, 
+                  "kg/s, \nstiffnesss coef=", stiffness,
+                  " kg/s2, input force=", input_force,
+                  " N, frequency=", frequency," radians/s")
+  
+  data_to_plot <- data.frame(time=vector_of_times, 
+                             displacement=vector_of_displacements/10)
+
+  fig <- plot_ly(x= data_to_plot$time, 
+                 y=data_to_plot$displacement, 
+                 type = "scatter",
+                 mode = 'lines')
+  
   fig <- fig %>% layout(title = title,
                         xaxis = list(title = "Time, seconds"),
                         yaxis = list(title = "Displacement, cm"))

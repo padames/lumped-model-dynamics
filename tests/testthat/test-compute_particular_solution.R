@@ -5,7 +5,7 @@ source(here::here("R","pole_types.R"))
 
 test_that("creates the function to generate the complementary solution", {
   
-  calc_function <- create_x_particular_function_roots_real_distintc_fn(1, 100, 1, 1, 1)
+  calc_function <- create_particular_function_roots_real_distintc_fn(1, 100, 1, 1, 1)
   
   expect_equal(class(calc_function), "function")
 })
@@ -40,7 +40,7 @@ test_that("the function to generate the complementary solution works as expected
   x_expected_value <- q1_v * exp(p1_v*t_v) + q2_v * exp(p2_v * t_v) 
     
   
-  x_calc_function <- create_x_particular_function_roots_real_distintc_fn(m, c, k, F0, w)
+  x_calc_function <- create_particular_function_roots_real_distintc_fn(m, c, k, F0, w)
   
 
   expect_equal(x_calc_function(t_v), x_expected_value)

@@ -102,7 +102,7 @@ server <- function(input, output, session) {
         maxtime <- input$maxtime
         
         time_vector <- seq(0, maxtime*60, 0.1) # the model needs seconds. 0.1 allow to capture detail when needed
-        displacement_vector_meters <- x_t_fn(input$mass, input$damping, input$stiff, input$frequency, input$force, time_vector)
+        displacement_vector_meters <- displacement_fn(input$mass, input$damping, input$stiff, input$frequency, input$force, time_vector)
 
         title <- paste0("Dynamic Response of a damped spring system initially at rest\nmass=",input$mass," kg, damping coeff=",
                         input$damping, " kg/s, stiffnesss coef=", input$stiff, "kg/s2,\nexternal force=",input$force," N, frequency=", input$frequency," radians/s")

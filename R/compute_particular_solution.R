@@ -9,7 +9,7 @@ pole_type_fn <- function(mass, damping, stiffness)
   
   if (discriminant > 0)
   {
-    pole_types$TWO_REAL_REPEATED 
+    pole_types$TWO_REAL_DISTINCT 
   } 
   else if ( discriminant < 0)
   {
@@ -17,19 +17,28 @@ pole_type_fn <- function(mass, damping, stiffness)
   }
   else
   {
-    pole_types$TWO_REAL_DISTINCT
+    pole_types$TWO_REAL_REPEATED
   }
 }
 
 
-create_particular_solution_function_fn <- function(m, c, k, F0, w) 
+create_particular_solution_function_fn <- function(mass, damping, stiffness, input_force, frequency) 
 {
-  poles_type = pole_type_fn(m, c, k)
+  poles_type = pole_type_fn(mass, damping, stiffness)
   
   if (poles_type == pole_types$TWO_REAL_DISTINCT)
   {
-    create_x_particular_function_roots_real_distintc_fn(m, c, k, F0, w)
+    create_particular_function_roots_real_distintc_fn(mass, damping, stiffness, input_force, frequency)
   }
+  else
+  {
+    function(vector_of_times)
+    {
+      num_time_points_to_simulate <- length(vector_of_times)
+      rep(0, times = num_time_points_to_simulate)
+    }
+  }
+  
 }
 
 
@@ -50,7 +59,8 @@ compute_two_real_poles_fn <- function(m, c, k)
 }
 
 
-create_x_particular_function_roots_real_distintc_fn <- function(m, c, k, F0, w)
+
+create_particular_function_roots_real_distintc_fn <- function(mass, damping, stiffness, input_force, frequency)
 {
   #' Creates a function that can be called with a time vector
   #' 
@@ -59,23 +69,26 @@ create_x_particular_function_roots_real_distintc_fn <- function(m, c, k, F0, w)
   #' 
   #' 
   
-  poles <- compute_two_real_poles_fn(m, c, k)
+  poles <- compute_two_real_poles_fn(mass, damping, stiffness)
   p1 <- poles$pole1
   p2 <- poles$pole2
   
-  q_num <- F0 * w
-  q1_den <- (p1*p1 + w*w) * (p1 - p2)
-  q2_den <- (p2*p2 + w*w) * (p2 - p1)
+  
+  
+  q_num <- input_force * frequency
+  
+  q1_den <- (p1*p1 + frequency*frequency) * (p1 - p2)
+  q2_den <- (p2*p2 + frequency*frequency) * (p2 - p1)
   
   q1 <- q_num / q1_den
   q2 <- q_num / q2_den
-  function(t_v) {
-    num_time_points_to_simulate <- length(t_v)
+  function(vector_of_times) {
+    num_time_points_to_simulate <- length(vector_of_times)
     q1_v <- rep(q1, times = num_time_points_to_simulate)
     q2_v <- rep(q2, times = num_time_points_to_simulate)
     p1_v <- rep(p1, times = num_time_points_to_simulate)
     p2_v <- rep(p2, times = num_time_points_to_simulate)
-    q1_v * exp(p1_v*t_v) + q2_v * exp(p2_v * t_v)  
+    q1_v * exp(p1_v*vector_of_times) + q2_v * exp(p2_v * vector_of_times)  
   }
 }
 
