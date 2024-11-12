@@ -32,11 +32,11 @@ create_particular_solution_function_fn <- function(mass, damping, stiffness, inp
   }
   else if (poles_type == pole_types$TWO_COMPLEX_CONJUGATE)
   {
-    create_particular_function_roots_complex_conjugate_fn()
+    create_particular_function_roots_complex_conjugate_fn(mass, damping, stiffness, input_force, frequency)
   }
   else
   {
-    create_particular_function_roots_real_repeated_fn()
+    create_particular_function_roots_real_repeated_fn(mass, damping, stiffness, input_force, frequency)
   }
   
 }
@@ -57,7 +57,6 @@ compute_two_real_poles_fn <- function(m, c, k)
   list(pole1=p1, pole2=p2)
   
 }
-
 
 
 create_particular_function_roots_real_distintc_fn <- function(mass, damping, stiffness, input_force, frequency)
@@ -134,7 +133,7 @@ create_particular_function_roots_complex_conjugate_fn <- function()
 
 create_particular_function_roots_real_repeated_fn <- function(mass, damping, stiffness, input_force, frequency)
 {
-  # TODO: replace this stub for the real function
+  # TODO: replace this stub for the real function1
   
   function(vector_of_times)
   {
@@ -170,39 +169,4 @@ compute_two_complex_conjugate_poles_fn <- function(mass, damping, stiffness)
   p2 <- complex( real = Re, imaginary = -Im)
   
   list(pole1=p1, pole2=p2)
-}
-
-
-## this function returns a complex number
-pole_ <- function( mass, damping_coeff, stiffness_coeff, possitive = TRUE) 
-{
-  sign <- ifelse(possitive, 1, -1)
-  den <- 2 * mass
-  discriminant <- damping_coeff * damping_coeff - 4 * stiffness_coeff * mass
-  if ( discriminant > 0)
-  {
-    num <- -damping_coeff + sign * sqrt( discriminant)
-    Re <- num / den
-    Im <- 0
-  }
-  else
-  {
-    Re <- -damping_coeff / den
-    Im <- sign * sqrt(-discriminant) / den
-  }
-  complex(real = Re, imaginary = Im)
-}
-
-
-## this is the pole computed with the positive square root of the discriminant
-pole_plus_fn <- function(mass, damping_coeff, stiffness_coeff)
-{
-  pole_( mass, damping_coeff, stiffness_coeff, TRUE)
-}
-
-
-## this is the pole computed with the negative square root of the discriminant 
-pole_minus_fn <- function( mass, damping_coeff, stiffness_coeff) 
-{
-  pole_( mass, damping_coeff, stiffness_coeff, FALSE)
 }
