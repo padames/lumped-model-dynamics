@@ -46,3 +46,6 @@ test_that("the function to generate the complementary solution works as expected
   expect_equal(x_calc_function(t_v), x_expected_value)
 })
 
+testthat::test_that("complex conjugate constant for under damped case computes correctly", {
+  
+})
