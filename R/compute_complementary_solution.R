@@ -94,33 +94,82 @@ create_complementary_function_roots_real_distintc_fn <- function(mass, damping, 
 }
 
 
-create_complementary_function_roots_complex_conjugate_fn <- function(mass, damping, stiffness, input_force, frequency)
+compute_complex_conjugate_constant_for_under_damped_complementary_solution_fn <- function(a_complex_pole, input_force, input_frequency)
+{
+  #' calculates the complex constant necessary for the under-damped solution of the linear ODE of second order
+  #' 
+  #' Compute the necessary real and imaginary parts of the complex conjugate constants 
+  #' appearing in the analytic solution of the under-damped linear ODE with an
+  #' external oscillatory force. This solution models the transient response of the system.
+  #' The final steady state is given by the particular solution, in this system 
+  #' that solution is governed by the external force. 
+  #' 
+  #' It expects one of the complex poles of the transfer function as input and it
+  #' returns the complex number representing the constant for the transient solution.      
+  #' 
+  #' The genesis of this complex number is the fact that the two constants appearing in the
+  #' conversion of the Laplace domain to the time domain are complex numbers. The have to be
+  #' complex conjugates for the complementary solution to be a Real number:
+  #' 
+  #'  x_complementary = q_1 * exp(p_1*t) + q_2 * exp(p_2*t)
+  #'  
+  #'  where p_1 = (R+i*I)*t and p_2 = (R - i*I)*t
+  #'  
+  #'  This equation can be transformed into
+  #'  
+  #'  exp(R*t) * ( (q_1+q_2) cos(I*t) + i*(q_1-q_2)*sin(I*t) )
+  #'  
+  #'  This solution can only be Real if (q_1+q_2) and i*(q_1-q_2) are also Real and this in turn
+  #'  can only be true if and only if q_1 and q_2 are complex conjugates.
+
+  R <- Re(a_complex_pole)
+  I <- Im(a_complex_pole)
+  
+  
+  R_square <- R * R
+  I_square <- I * I
+  
+  frequency_squared <- input_frequency * input_frequency
+  
+  force_times_frequency <- input_force * input_frequency
+  R_square_time_I_square <- R_square * I_square
+  
+  R_2_minus_I_plus_freq_2 <- R_square - I + frequency_squared 
+  R_2_minus_I_plus_freq_2_all_squared <- R_2_minus_I_plus_freq_2 * R_2_minus_I_plus_freq_2
+  
+  # Real part
+  num_Real <- - R * force_times_frequency
+  den_Real <- 4 * R_square_time_I_square + R_2_minus_I_plus_freq_2_all_squared
+  
+  # Imaginary part
+  num_Img <- - force_times_frequency * R_2_minus_I_plus_freq_2
+  den_Img <- 8 * I * R_square_time_I_square + 2 * I * R_2_minus_I_plus_freq_2_all_squared
+  
+  Re_constant <- num_Real / den_Real
+  Im_constant <- num_Img / den_Img
+  
+  constant_q_under_damped_case <- complex(real = Re_constant, imaginary = Im_constant)
+  
+  constant_q_under_damped_case
+}
+
+
+create_complementary_function_roots_complex_conjugate_fn <- function(mass, damping, stiffness, input_force, input_frequency)
 {
   if (FALSE)
   {
     # this won't work because the real and imaginary parts have to
     # be separated and the wave solution be formed then.
-    two_complex_conjugate_poles <- compute_two_complex_conjugate_poles_fn(mass, damping, stiffness)
+    two_complex_conjugate_poles <- compute_two_complex_conjugate_poles_fn(mass, 
+                                                                          damping, 
+                                                                          stiffness)
     
-    p1 <- two_complex_conjugate_poles$p1
-    p2 <- two_complex_conjugate_poles$p2
-    
-    q_num <- input_force * frequency
-    
-    q1_den <- (p1*p1 + frequency*frequency) * (p1 - p2)
-    q2_den <- (p2*p2 + frequency*frequency) * (p2 - p1)
-    
-    q1 <- q_num / q1_den
-    q2 <- q_num / q2_den
-    
-    real_part <- Re(p1)
-    imaginary_part <- Im(p1)
-    
-    exp_term <- exp(real_part)
-    
-    q1_plus_q2 <- q1 + q2
-    q1_minus_q2 <- q1 - q2
-    
+    pole_1 <- two_complex_conjugate_poles$p1
+
+    constant <- compute_complex_conjugate_constant_for_under_damped_complementary_solution_fn(pole_1, 
+                                                                                              input_force, 
+                                                                                              input_frequency )    
+                                                                                            
     function(seconds_to_simulate)
     {
       num_time_points_to_simulate <- length(seconds_to_simulate)
@@ -142,7 +191,6 @@ create_complementary_function_roots_complex_conjugate_fn <- function(mass, dampi
     num_time_points_to_simulate <- length(vector_of_times)
     rep(0, times = num_time_points_to_simulate)
   }
-  
 }
 
 
