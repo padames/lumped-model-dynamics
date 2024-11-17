@@ -11,7 +11,7 @@ test_that("creates a function",
             c <- 0.5
             k <- 0.25
             w <- 0.15
-            x_compl <- create_complementary_solution_function_fn(m, c, k ,w)
+            x_compl <- create_particular_solution_function_fn(m, c, k ,w)
             
             expect_equal(class(x_compl), "function")
           })
@@ -24,7 +24,7 @@ test_that("creates a function that can be called",
             k <- 0.25
             w <- 0.15
             
-            x_compl <- create_complementary_solution_function_fn(m, c, k ,w)
+            x_compl <- create_particular_solution_function_fn(m, c, k ,w)
             
             F0 <- 5
             t <- seq(1, 10, 0.5)
@@ -47,7 +47,7 @@ test_that("computes the correct solution",
 
             x_expected <- F0 * Mod(Giw_complex) * sin(w*t + Arg(Giw_complex))
             
-            x_calc_fn <- create_complementary_solution_function_fn(m, c, k ,w)
+            x_calc_fn <- create_particular_solution_function_fn(m, c, k ,w)
             
             x_calc <- x_calc_fn(F0, t)
             
@@ -74,7 +74,7 @@ test_that("computes the correct solution for large t",
             
             x_expected <- F0_v * MR_v  * sin(w_v*t + phase_v)
             
-            x_calc_fn <- create_complementary_solution_function_fn(m, c, k , w)
+            x_calc_fn <- create_particular_solution_function_fn(m, c, k , w)
             
             x_calc <- x_calc_fn(F0, t)
             

@@ -22,23 +22,23 @@ pole_type_fn <- function(mass, damping, stiffness)
 }
 
 
-create_particular_solution_function_fn <- function(mass, damping, stiffness, input_force, frequency) 
+create_complementary_solution_function_fn <- function(mass, damping, stiffness, input_force, frequency) 
 {
   poles_type = pole_type_fn(mass, damping, stiffness)
   
   if (poles_type == pole_types$TWO_REAL_DISTINCT)
   {
-    create_particular_function_roots_real_distintc_fn(mass, damping, stiffness, input_force, frequency)
+    create_complementary_function_roots_real_distintc_fn(mass, damping, stiffness, input_force, frequency)
   }
   else if (poles_type == pole_types$TWO_COMPLEX_CONJUGATE)
   {
     stop("Under-damped solution not implemeted yet")
-    create_particular_function_roots_complex_conjugate_fn(mass, damping, stiffness, input_force, frequency)
+    create_complementary_function_roots_complex_conjugate_fn(mass, damping, stiffness, input_force, frequency)
   }
   else
   {
     stop("Critically damped solution not implemneted yet")
-    create_particular_function_roots_real_repeated_fn(mass, damping, stiffness, input_force, frequency)
+    create_complementary_function_roots_real_repeated_fn(mass, damping, stiffness, input_force, frequency)
   }
   
 }
@@ -61,7 +61,7 @@ compute_two_real_poles_fn <- function(m, c, k)
 }
 
 
-create_particular_function_roots_real_distintc_fn <- function(mass, damping, stiffness, input_force, frequency)
+create_complementary_function_roots_real_distintc_fn <- function(mass, damping, stiffness, input_force, frequency)
 {
   #' Creates a function that can be called with a time vector
   #' 
@@ -94,7 +94,7 @@ create_particular_function_roots_real_distintc_fn <- function(mass, damping, sti
 }
 
 
-create_particular_function_roots_complex_conjugate_fn <- function(mass, damping, stiffness, input_force, frequency)
+create_complementary_function_roots_complex_conjugate_fn <- function(mass, damping, stiffness, input_force, frequency)
 {
   if (FALSE)
   {
@@ -146,7 +146,7 @@ create_particular_function_roots_complex_conjugate_fn <- function(mass, damping,
 }
 
 
-create_particular_function_roots_real_repeated_fn <- function(mass, damping, stiffness, input_force, frequency)
+create_complementary_function_roots_real_repeated_fn <- function(mass, damping, stiffness, input_force, frequency)
 {
   # TODO: replace this stub for the real function1
   
