@@ -12,7 +12,7 @@ source(here::here("R","compute_Giw.R"))
 source(here::here("R","compute_complementary_solution.R"))
 
 
-create_particular_solution_function_fn <- function(mass, damping_coefficient, stiffness_coefficient, force_frequency) {
+create_particular_solution_function_fn <- function(mass, damping_coefficient, stiffness_coefficient, input_frequency) {
   #' Creates a closure to be called with F0 and t
   #' 
   #' This function returns another function to compute the particular solution
@@ -27,7 +27,7 @@ create_particular_solution_function_fn <- function(mass, damping_coefficient, st
   #' 
   
   # this is part of the closure shipped with the function below
-  Giw_complex <- compute_Giw_fn(mass, damping_coefficient, stiffness_coefficient, force_frequency)
+  Giw_complex <- compute_Giw_fn(mass, damping_coefficient, stiffness_coefficient, input_frequency)
   
   # this is the particular solution summoned when calling the closure 
   function(input_force, vector_of_times) 
@@ -42,7 +42,7 @@ create_particular_solution_function_fn <- function(mass, damping_coefficient, st
     
     vector_of_magnitud_ratios <- rep(magnitud_ratio, times = num_time_points_to_simulate)
     
-    vector_of_frequencies <- rep(force_frequency, times=num_time_points_to_simulate)
+    vector_of_frequencies <- rep(input_frequency, times=num_time_points_to_simulate)
     
     vector_of_phase_angles <- rep(phase_angle, times = num_time_points_to_simulate)
     

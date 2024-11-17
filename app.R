@@ -175,7 +175,7 @@ server <- function(input, output, session) {
     filename2 <- normalizePath(file.path('./Images', paste('fig2.jpeg', sep='')))  
     filename3 <- normalizePath(file.path('./Images', paste('fig3.jpeg', sep='')))  
     filename4 <- normalizePath(file.path('./Images', paste('fig4.jpeg', sep='')))  
-    filename5 <- normalizePath(file.path('./Images', paste('fig5.jpeg', sep='')))  
+    filename5 <- normalizePath(file.path('./Images', paste('fig5.jpeg.orig', sep='')))  
     
     output$fig0 = renderImage(list(src=filename0), deleteFile = FALSE)
     output$fig1 = renderImage(list(src=filename1), deleteFile = FALSE)
