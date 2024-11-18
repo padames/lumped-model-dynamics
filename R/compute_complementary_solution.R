@@ -36,7 +36,6 @@ create_complementary_solution_function_fn <- function(mass, damping, stiffness, 
   }
   else
   {
-    stop("Critically damped solution not implemneted yet")
     create_complementary_function_roots_real_repeated_fn(mass, damping, stiffness, input_force, frequency)
   }
   
@@ -185,12 +184,24 @@ create_complementary_function_roots_complex_conjugate_fn <- function(mass, dampi
 
 create_complementary_function_roots_real_repeated_fn <- function(mass, damping, stiffness, input_force, frequency)
 {
-  # TODO: replace this stub for the real function1
+  damping_over_two_times_mass <- damping / (2 * mass)
+  damping_over_two_times_mass_squared <- damping_over_two_times_mass * damping_over_two_times_mass
+  frequency_squared <- frequency * frequency
+
+  first_den  <- damping_over_two_times_mass_squared + frequency_squared
+  first_term <- frequency / first_den
   
-  function(vector_of_times)
+  second_term <- damping * frequency / (mass * first_den * first_den)
+
+  function(seconds_to_simulate)
   {
-    num_time_points_to_simulate <- length(vector_of_times)
-    rep(0, times = num_time_points_to_simulate)
+    num_time_points_to_simulate <- length(seconds_to_simulate)
+    exp_term_s <- exp(-damping_over_two_times_mass * seconds_to_simulate)
+    coefficients_first_term <- rep( first_term, times = num_time_points_to_simulate)
+    
+    coefficients_second_term <- rep(second_term, times = num_time_points_to_simulate)
+    
+    solution <- exp_term_s * ( coefficients_first_term * seconds_to_simulate + coefficients_second_term)
   }
 }
 

@@ -85,3 +85,13 @@ testthat::test_that("create_complementary_function_roots_complex_conjugate_fn ce
   
   testthat::expect_equal(length(a_solution), length(seq(0,10)))
 })
+
+testthat::test_that("solution for critically damped system ceates a vector of expected length", {
+  
+  solution_fn <- create_complementary_function_roots_real_repeated_fn(mass = 1, damping = 4, stiffness = 4, input_force = 1, frequency = 0.25)
+
+  a_solution <- solution_fn(seq(0,10))
+  
+  testthat::expect_equal(length(a_solution), length(seq(0,10)))
+  
+})
