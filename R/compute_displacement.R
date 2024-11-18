@@ -136,3 +136,36 @@ displacement_plot_fn <- function(arguments)
   # this will make it show in an interactive RStudio session
   fig
 }
+
+
+displacement_plot_simple_fn <- function(arguments)
+{
+  #' Create a plot for easy visualization of the dynamic response
+  #' 
+  #' 
+  #' Creates a plot with the displacement and times.
+  #' It relies on the function displacement_fn to compute the dynamic response
+  #' to the damped spring system subject to an external force, starting at rest
+  #' and in its rest position (with zero displacement). 
+  #' 
+  #' @param arguments a list of values including the mass, damping, stiffness,
+  #' frequency, input force, and the times to be used for the simulation of the
+  #' displacement of the spring.
+  
+  
+  vector_of_displacements <- displacement_fn(arguments)
+  
+  title <- paste0("Dynamic Response of damped spring system, mass=", arguments$mass,
+                  " kg, damping coeff=", arguments$damping, 
+                  "kg/s, \nstiffnesss coef=", arguments$stiffness,
+                  " kg/s2, input force=", arguments$input_force,
+                  " N, frequency=", arguments$frequency," radians/s")
+  
+
+  plot(arguments$seconds_to_simulate, vector_of_displacements/10, type = "l",
+       main = title,
+       xlab = "Time, seconds",
+       ylab = "Displacement, cm")
+}
+
+

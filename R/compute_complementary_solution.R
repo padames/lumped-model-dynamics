@@ -32,7 +32,6 @@ create_complementary_solution_function_fn <- function(mass, damping, stiffness, 
   }
   else if (poles_type == pole_types$TWO_COMPLEX_CONJUGATE)
   {
-    stop("Under-damped solution not implemeted yet")
     create_complementary_function_roots_complex_conjugate_fn(mass, damping, stiffness, input_force, frequency)
   }
   else
@@ -156,41 +155,31 @@ compute_complex_conjugate_constant_for_under_damped_complementary_solution_fn <-
 
 create_complementary_function_roots_complex_conjugate_fn <- function(mass, damping, stiffness, input_force, input_frequency)
 {
-  if (FALSE)
-  {
-    # this won't work because the real and imaginary parts have to
-    # be separated and the wave solution be formed then.
-    two_complex_conjugate_poles <- compute_two_complex_conjugate_poles_fn(mass, 
-                                                                          damping, 
-                                                                          stiffness)
-    
-    pole_1 <- two_complex_conjugate_poles$p1
-
-    constant <- compute_complex_conjugate_constant_for_under_damped_complementary_solution_fn(pole_1, 
-                                                                                              input_force, 
-                                                                                              input_frequency )    
-                                                                                            
-    function(seconds_to_simulate)
-    {
-      num_time_points_to_simulate <- length(seconds_to_simulate)
-      # compute all vectors
-      q1_plus_q2_s <- rep(q1_plus_q2, times = num_time_points_to_simulate)
-      q1_minus_q2_s <- rep(q1_minus_q2, times = num_time_points_to_simulate)
-      exp_term_s <- rep(exp_term, times = num_time_points_to_simulate)
-      imaginary_part_s <- rep(imaginary_part, times = num_time_points_to_simulate)
-      
-      # now compose the particular response to the under-damped case
-      exp_term_s * ( q1_plus_q2_s * cos(imaginary_part_s * seconds_to_simulate ) + 
-                     q1_minus_q2_s * sin( imaginary_part_s * seconds_to_simulate))
-    }  
-  }
-  # TODO: replace this stub for the real function
+  two_complex_conjugate_poles <- compute_two_complex_conjugate_poles_fn(mass, 
+                                                                        damping, 
+                                                                        stiffness)
   
-  function(vector_of_times)
+  pole_1 <- two_complex_conjugate_poles$pole1
+
+  constant_q_1 <- compute_complex_conjugate_constant_for_under_damped_complementary_solution_fn(pole_1, 
+                                                                                            input_force, 
+                                                                                            input_frequency )    
+                                                                                          
+  function(seconds_to_simulate)
   {
-    num_time_points_to_simulate <- length(vector_of_times)
-    rep(0, times = num_time_points_to_simulate)
-  }
+    num_time_points_to_simulate <- length(seconds_to_simulate)
+    # compute all vectors
+    
+    Re_q1_s <- rep(2.0*Re(constant_q_1), times = num_time_points_to_simulate)
+    Im_q1_s <- rep(2.0*Im(constant_q_1), times = num_time_points_to_simulate)
+    R_s <- rep(Re(pole_1), times = num_time_points_to_simulate)
+    I_s <- rep(Im(pole_1), times = num_time_points_to_simulate)
+    
+    exp_term_s <- exp(R_s * seconds_to_simulate)
+    
+    # now compose the particular response to the under-damped case
+    exp_term_s * ( Re_q1_s * cos( I_s * seconds_to_simulate) - Im_q1_s * sin( I_s * seconds_to_simulate))
+  }  
 }
 
 
@@ -217,7 +206,7 @@ compute_two_complex_conjugate_poles_fn <- function(mass, damping, stiffness)
   
   if ( discriminant >= 0 )  
   {
-    msg <- paste0("Expecting complex conjuagte poles, discriminant = ", discriminant)
+    msg <- paste0("Expecting complex conjugate poles, discriminant = ", discriminant)
     stop(msg)
   }
   

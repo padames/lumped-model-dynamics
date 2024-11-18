@@ -54,9 +54,34 @@ testthat::test_that("complex conjugate constant for under damped case computes c
   input_force <- 2
   input_frequency <- 3
   
-  expected_constant <- complex(real = -4.0, imaginary = 5)
+  
+  Re <- -(-3.5*input_force*input_frequency)/(4*(3.5)*(3.5)*6.9*6.9 + (3.5*3.5-6.9+input_frequency*input_frequency)*(3.5*3.5-6.9+input_frequency*input_frequency))
+  
+  Im <- -(input_force*input_frequency*(3.5*3.5-6.9+input_frequency*input_frequency))/(8*3.5*3.5*6.9*6.9*6.9+2*6.9*(3.5*3.5-6.9+input_frequency*input_frequency)*(3.5*3.5-6.9+input_frequency*input_frequency))
+  
+
+  expected_constant <- complex(real = Re, imaginary = Im)
   
   calculated_constant <- compute_complex_conjugate_constant_for_under_damped_complementary_solution_fn(constant_complex_conjugate, input_force, input_frequency)
   
   testthat::expect_equal(calculated_constant, expected_constant)
+})
+
+
+
+testthat::test_that("create_complementary_function_roots_complex_conjugate_fn ceates a vector of expected length", {
+  mass <- 25
+  damping <- 1
+  stiffness <- 0.1
+  input_force <-2
+  input_frequency <-3
+  
+  solution_fn <- create_complementary_function_roots_complex_conjugate_fn(mass, 
+                                                                          damping, 
+                                                                          stiffness,
+                                                                          input_force,
+                                                                          input_frequency)
+  a_solution <- solution_fn(seq(0,10))
+  
+  testthat::expect_equal(length(a_solution), length(seq(0,10)))
 })
