@@ -39,7 +39,7 @@ ui <- fluidPage(
                       "Stiffness coefficient, kg/s2",
                       min = 0,
                       max = 10,
-                      step = 0.25,
+                      step = 0.1,
                       value = 0.5),
           sliderInput("force_newton",
                       "Max input force, N",
@@ -94,6 +94,7 @@ ui <- fluidPage(
                       tabPanel("Log", br(),
                                textOutput("logentry1"), br(),
                                textOutput("logentry2"), br(),
+                               textOutput("logentry3"), br(),
                       )
           ))
     )
@@ -109,12 +110,12 @@ server <- function(input, output, session) {
         
         seconds_to_simulate <- seq(0, max_seconds_of_simulation, 0.1) # the model needs seconds. 0.1 allow to capture detail when needed
 
-        input_parameters <- list(mass = input$mass_kg,
-                                 damping = input$damping_kg_per_s,
-                                 stiffness = input$stiff_kg_per_s2,
-                                 frequency = input$frequency_rad_per_s,
-                                 input_force = input$force_newton,
-                                 vector_of_times = seconds_to_simulate)
+        input_parameters <- list(mass                = input$mass_kg,
+                                 damping             = input$damping_kg_per_s,
+                                 stiffness           = input$stiff_kg_per_s2,
+                                 frequency           = input$frequency_rad_per_s,
+                                 input_force         = input$force_newton,
+                                 seconds_to_simulate = seconds_to_simulate)
 
         displacement_vector_meters <- displacement_fn(input_parameters)
 
@@ -186,6 +187,10 @@ server <- function(input, output, session) {
 
     output$logentry1 = renderText("1. Nov 7, 2024: First version complete")
     output$logentry2 = renderText("2. Nov 10, 2024: Upgrade from native R plot to plotly library. Got zoom and print for free.")
+    log_msg_3 <- paste("3. Nov 17, 2024: All dynamic response cases implemented: damped, critically damped, and under-damped.",
+                       "The input ranges for mass, damping and stiffness coefficients, the input force and the  input frequency,",
+                       " have been extended to cover the under-damped scenarios.") 
+    output$logentry3 = renderText(log_msg_3)
 }
 
 # Run the application 

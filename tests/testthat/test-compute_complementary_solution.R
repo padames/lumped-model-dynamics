@@ -46,6 +46,17 @@ test_that("the function to generate the complementary solution works as expected
   expect_equal(x_calc_function(t_v), x_expected_value)
 })
 
+
+
 testthat::test_that("complex conjugate constant for under damped case computes correctly", {
   
+  constant_complex_conjugate <- complex(real = -3.5, imaginary = 6.9)
+  input_force <- 2
+  input_frequency <- 3
+  
+  expected_constant <- complex(real = -4.0, imaginary = 5)
+  
+  calculated_constant <- compute_complex_conjugate_constant_for_under_damped_complementary_solution_fn(constant_complex_conjugate, input_force, input_frequency)
+  
+  testthat::expect_equal(calculated_constant, expected_constant)
 })

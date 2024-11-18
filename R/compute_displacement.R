@@ -70,27 +70,25 @@ displacement_fn <- function(arguments)
   #'        stiffness_coefficient the spring stiffness in kg/s^2
   #'        force_frequency the frequency of the oscillatory external force, in radians per second
   #'        input_force the maximum external force in Newton
-  #'        vector_of_times time points to solve for
+  #'        seconds_to_simulate time points to solve for
   
-              mass  <-  arguments$mass
-           damping  <-  arguments$damping
-         stiffness  <-  arguments$stiffness
-         frequency  <-  arguments$frequency
-       input_force  <-  arguments$input_force
-   vector_of_times  <-  arguments$vector_of_times  
+                 mass  <-  arguments$mass
+              damping  <-  arguments$damping
+            stiffness  <-  arguments$stiffness
+            frequency  <-  arguments$frequency
+          input_force  <-  arguments$input_force
+  seconds_to_simulate  <-  arguments$seconds_to_simulate  
   
   
   ##########
    
   displacement_complementary_fn <- create_complementary_solution_function_fn(mass, damping, stiffness, input_force, frequency)
-  
-  displacement_complementary_solution <- displacement_complementary_fn(vector_of_times)
+  displacement_complementary_solution <- displacement_complementary_fn(seconds_to_simulate)
   
   ##########
   
   displacement_particular_fn <- create_particular_solution_function_fn(mass, damping, stiffness, frequency)
-  
-  displacement_particular_solution <- displacement_particular_fn(input_force, vector_of_times)
+  displacement_particular_solution <- displacement_particular_fn(input_force, seconds_to_simulate)
   
   # the complete vectorized solution
   
@@ -123,7 +121,7 @@ displacement_plot_fn <- function(arguments)
                   " kg/s2, input force=", arguments$input_force,
                   " N, frequency=", arguments$frequency," radians/s")
   
-  data_to_plot <- data.frame(time=arguments$vector_of_times, 
+  data_to_plot <- data.frame(time=arguments$seconds_to_simulate, 
                              displacement=vector_of_displacements/10)
 
   fig <- plot_ly(x    = data_to_plot$time, 
@@ -138,4 +136,3 @@ displacement_plot_fn <- function(arguments)
   # this will make it show in an interactive RStudio session
   fig
 }
-
