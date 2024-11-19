@@ -17,6 +17,6 @@ using<-function(...) {
 # install.packages("testthat")
 
 
-using("devtools", "usethis", "testthat", "plotly")
+using("ggplot2", "docstring", "usethis", "testthat", "plotly", "shiny", "shinythemes")
 
-install_github("dasonk/docstring")
+#install_github("dasonk/docstring")
